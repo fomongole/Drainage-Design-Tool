@@ -25,9 +25,12 @@ export function TrapezoidalSection({ crossSection }: Props) {
   // Use uniform scale so angles look correct; pick the tighter axis
   const scale = Math.min(scaleX, scaleY)
 
-  // Origin: bottom-centre of channel
+  // Calculate how tall the scaled drawing actually is
+  const renderedH = realHeight * scale
+
+  // Origin: centre horizontally, and vertically center to eliminate dead space at the top
   const ox = pad.left + drawW / 2
-  const oy = pad.top + drawH
+  const oy = pad.top + drawH - ((drawH - renderedH) / 2)
 
   // ── Coordinate helper (real → SVG, y flipped) ─────────────────────────
   const pt = (rx: number, ry: number) => ({
