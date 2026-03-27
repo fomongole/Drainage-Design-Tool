@@ -15,19 +15,20 @@ export function IDFTable({ idfTable }: Props) {
         <table className="w-full border-collapse">
           {/* ── Header ──────────────────────────────────────────────── */}
           <thead>
-            <tr
-              style={{ borderBottom: '1px solid var(--color-border)' }}
-            >
+            <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
               <th
-                className="label text-left pb-3"
+                className="text-left pb-3 text-xs font-semibold text-text-muted uppercase tracking-wider"
                 style={{ width: '45%' }}
               >
                 Duration
               </th>
-              <th className="label text-right pb-3">
+              <th className="text-right pb-3 text-xs font-semibold text-text-muted uppercase tracking-wider">
                 Intensity (mm/hr)
               </th>
-              <th className="label text-right pb-3" style={{ width: '20%' }}>
+              <th 
+                className="text-right pb-3 text-xs font-semibold text-text-muted uppercase tracking-wider" 
+                style={{ width: '20%' }}
+              >
                 Note
               </th>
             </tr>
