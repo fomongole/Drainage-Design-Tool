@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CatchmentForm } from './CatchmentForm'
 import { RainfallChannelForm } from './RainfallChannelForm'
 import { Button } from '@/components/ui/Button'
+import { StatusBanner } from '@/components/ui/StatusBanner'
 import { useCalculation } from '@/hooks/useCalculation'
 import { useCalculationStore } from '@/store/calculationStore'
 import { useSavedCalculations } from '@/hooks/useSavedCalculations'
@@ -35,11 +36,24 @@ export function InputPanel() {
   const { isCalculating, inputs: storeInputs, results, validationSummary } = useCalculationStore()
   const { canSave }          = useSavedCalculations()
   const [isExporting, setIsExporting] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
+  
+  const prevCalculating = useRef(false)
 
   const methods = useForm<DesignInputFormValues>({
     resolver: zodResolver(designInputSchema),
     defaultValues: DEFAULT_VALUES,
   })
+
+  // Auto-scroll to results on mobile after calculation finishes
+  useEffect(() => {
+    if (prevCalculating.current && !isCalculating && results) {
+      if (window.innerWidth < 1024) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+      }
+    }
+    prevCalculating.current = isCalculating
+  }, [isCalculating, results])
 
   const onSubmit = (data: DesignInputFormValues) => {
     const inputs: DesignInputs = {
@@ -67,10 +81,13 @@ export function InputPanel() {
   const handleExportPDF = async () => {
     if (!storeInputs || !results) return
     setIsExporting(true)
+    setPdfError(null)
     try {
       await exportToPDF(storeInputs, results, validationSummary)
     } catch (err) {
       console.error('PDF export failed:', err)
+      setPdfError('Failed to generate PDF. Please try again.')
+      setTimeout(() => setPdfError(null), 4000) // Auto-dismiss after 4s
     } finally {
       setIsExporting(false)
     }
@@ -99,6 +116,7 @@ export function InputPanel() {
               size="lg"
               onClick={() => methods.reset(DEFAULT_VALUES)}
               title="Reset to default values"
+              aria-label="Reset input values"
             >
               ↺
             </Button>
@@ -116,6 +134,11 @@ export function InputPanel() {
           >
             {isExporting ? 'Exporting PDF…' : '↓ Export PDF Report'}
           </Button>
+          
+          {/* PDF Error Status */}
+          {pdfError && (
+            <StatusBanner variant="danger" title="Export Failed" message={pdfError} />
+          )}
         </div>
       </form>
     </FormProvider>

@@ -92,99 +92,104 @@ export function IDFChart({ idfTable }: Props) {
       title="IDF Curve"
       subtitle="Rainfall intensity vs duration — logarithmic scale"
     >
-      <ResponsiveContainer width="100%" height={280}>
-        <LineChart
-          data={idfTable}
-          margin={{ top: 12, right: 24, bottom: 32, left: 16 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="var(--color-border)"
-            opacity={0.6}
-          />
+      {/* MOBILE UX: Horizontal scroll wrapper to prevent chart squishing on phones */}
+      <div className="w-full overflow-x-auto pb-2 touch-pan-x">
+        <div className="min-w-[460px] h-[280px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={idfTable}
+              margin={{ top: 12, right: 24, bottom: 32, left: 16 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="var(--color-border)"
+                opacity={0.6}
+              />
 
-          {/* ── X axis — log scale ──────────────────────────────────── */}
-          <XAxis
-            dataKey="duration"
-            scale="log"
-            domain={[5, 1440]}
-            type="number"
-            ticks={xTicks}
-            tickFormatter={(v: number) => (v >= 60 ? `${v / 60}h` : `${v}`)}
-            tick={{
-              fill: 'var(--color-text-muted)',
-              fontSize: 11,
-              fontFamily: 'var(--font-mono)',
-            }}
-            tickLine={{ stroke: 'var(--color-border)' }}
-            axisLine={{ stroke: 'var(--color-border)' }}
-            label={{
-              value: 'Duration (min / hr)',
-              position: 'insideBottom',
-              offset: -20,
-              fill: 'var(--color-text-muted)',
-              fontSize: 11,
-              fontFamily: 'var(--font-sans)',
-            }}
-          />
+              {/* ── X axis — log scale ──────────────────────────────────── */}
+              <XAxis
+                dataKey="duration"
+                scale="log"
+                domain={[5, 1440]}
+                type="number"
+                ticks={xTicks}
+                tickFormatter={(v: number) => (v >= 60 ? `${v / 60}h` : `${v}`)}
+                tick={{
+                  fill: 'var(--color-text-muted)',
+                  fontSize: 11,
+                  fontFamily: 'var(--font-mono)',
+                }}
+                tickLine={{ stroke: 'var(--color-border)' }}
+                axisLine={{ stroke: 'var(--color-border)' }}
+                label={{
+                  value: 'Duration (min / hr)',
+                  position: 'insideBottom',
+                  offset: -20,
+                  fill: 'var(--color-text-muted)',
+                  fontSize: 11,
+                  fontFamily: 'var(--font-sans)',
+                }}
+              />
 
-          {/* ── Y axis ─────────────────────────────────────────────── */}
-          <YAxis
-            tick={{
-              fill: 'var(--color-text-muted)',
-              fontSize: 11,
-              fontFamily: 'var(--font-mono)',
-            }}
-            tickLine={{ stroke: 'var(--color-border)' }}
-            axisLine={{ stroke: 'var(--color-border)' }}
-            tickFormatter={(v: number) => `${v}`}
-            label={{
-              value: 'Intensity (mm/hr)',
-              angle: -90,
-              position: 'insideLeft',
-              offset: 0,
-              dy: 60,
-              fill: 'var(--color-text-muted)',
-              fontSize: 11,
-              fontFamily: 'var(--font-sans)',
-            }}
-          />
+              {/* ── Y axis ─────────────────────────────────────────────── */}
+              <YAxis
+                tick={{
+                  fill: 'var(--color-text-muted)',
+                  fontSize: 11,
+                  fontFamily: 'var(--font-mono)',
+                }}
+                tickLine={{ stroke: 'var(--color-border)' }}
+                axisLine={{ stroke: 'var(--color-border)' }}
+                tickFormatter={(v: number) => `${v}`}
+                label={{
+                  value: 'Intensity (mm/hr)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: 0,
+                  dy: 60,
+                  fill: 'var(--color-text-muted)',
+                  fontSize: 11,
+                  fontFamily: 'var(--font-sans)',
+                }}
+              />
 
-          <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} />
 
-          {/* ── Amber reference line at design duration ─────────────── */}
-          {designRow && (
-            <ReferenceLine
-              x={designRow.duration}
-              stroke="var(--color-warning)"
-              strokeWidth={1.5}
-              strokeDasharray="5 3"
-              label={{
-                value: `tc = ${designRow.duration} min`,
-                position: 'top',
-                fill: 'var(--color-warning)',
-                fontSize: 10,
-                fontFamily: 'var(--font-mono)',
-              }}
-            />
-          )}
+              {/* ── Amber reference line at design duration ─────────────── */}
+              {designRow && (
+                <ReferenceLine
+                  x={designRow.duration}
+                  stroke="var(--color-warning)"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 3"
+                  label={{
+                    value: `tc = ${designRow.duration} min`,
+                    position: 'top',
+                    fill: 'var(--color-warning)',
+                    fontSize: 10,
+                    fontFamily: 'var(--font-mono)',
+                  }}
+                />
+              )}
 
-          {/* ── IDF line ────────────────────────────────────────────── */}
-          <Line
-            type="monotoneX"
-            dataKey="intensity"
-            stroke="var(--color-accent)"
-            strokeWidth={2.5}
-            dot={false}
-            activeDot={{
-              r: 5,
-              fill: 'var(--color-accent)',
-              stroke: 'var(--color-bg-card)',
-              strokeWidth: 2,
-            }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+              {/* ── IDF line ────────────────────────────────────────────── */}
+              <Line
+                type="monotoneX"
+                dataKey="intensity"
+                stroke="var(--color-accent)"
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{
+                  r: 5,
+                  fill: 'var(--color-accent)',
+                  stroke: 'var(--color-bg-card)',
+                  strokeWidth: 2,
+                }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </Card>
   )
 }

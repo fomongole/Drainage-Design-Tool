@@ -8,7 +8,8 @@ export const designInputSchema = z.object({
   // ── Catchment ─────────────────────────────────────────────────────────────
   area: pos('Area'),
   flowPathLength: pos('Flow path length'),
-  slope: pos('Slope').max(1, 'Slope must be ≤ 1 m/m (e.g. 0.005)'),
+  // STRICT GUARDRAIL: Prevent 0 slope to avoid Infinity in Kirpich tc
+  slope: z.coerce.number().gt(0, 'Slope must be > 0').max(1, 'Slope must be ≤ 1 m/m (e.g. 0.005)'),
   runoffCoefficient: z.coerce
     .number()
     .min(0.01, 'Must be greater than 0')
@@ -22,7 +23,6 @@ export const designInputSchema = z.object({
   // ── Rainfall ──────────────────────────────────────────────────────────────
   meanAnnualMaxRainfall: pos('Mean annual rainfall'),
   stdDeviation: pos('Standard deviation'),
-  // Optional — empty string → undefined, filled → positive number
   stormDurationOverride: z.preprocess(
     (v) => (v === '' || v === null || v === undefined ? undefined : v),
     z.coerce.number().positive('Must be > 0 minutes').optional()

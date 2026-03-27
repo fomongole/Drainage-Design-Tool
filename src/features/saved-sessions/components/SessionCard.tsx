@@ -52,13 +52,14 @@ export function SessionCard({ session, onLoad, onDelete }: SessionCardProps) {
       {/* ── Mini stats ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-1.5">
         {[
-          { label: 'Q', value: Q, unit: 'm³/s' },
-          { label: 'D', value: D, unit: 'm'    },
-          { label: 'B', value: B, unit: 'm'    },
-        ].map(({ label, value, unit }) => (
+          { label: 'Q', value: Q, fullValue: session.results.hydrology.peakDischarge, unit: 'm³/s' },
+          { label: 'D', value: D, fullValue: session.results.channelDesign.flowDepth, unit: 'm'    },
+          { label: 'B', value: B, fullValue: session.results.channelDesign.baseWidth, unit: 'm'    },
+        ].map(({ label, value, fullValue, unit }) => (
           <div
             key={label}
-            className="rounded-md border border-border bg-bg-card px-2 py-1.5 text-center"
+            title={`Full precision: ${fullValue} ${unit}`}
+            className="rounded-md border border-border bg-bg-card px-2 py-1.5 text-center cursor-help"
           >
             <p className="text-xs text-text-muted">{label}</p>
             <p className="text-xs font-mono font-semibold text-text-primary mt-0.5">
@@ -85,6 +86,7 @@ export function SessionCard({ session, onLoad, onDelete }: SessionCardProps) {
           size="sm"
           onClick={handleDelete}
           style={{ color: 'var(--color-danger)' }}
+          aria-label={`Delete session: ${session.name}`}
         >
           Delete
         </Button>

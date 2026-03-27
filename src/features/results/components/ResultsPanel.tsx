@@ -8,6 +8,18 @@ import { IDFTable } from '@/features/idf-table/components/IDFTable'
 import { TrapezoidalSection } from '@/features/channel-diagram/components/TrapezoidalSection'
 import { ValidationPanel } from '@/features/validation-panel/components/ValidationPanel'
 
+// ── Loading Skeleton ───────────────────────────────────────────────────────
+function LoadingSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-12 bg-bg-card rounded-lg w-full border border-border"></div>
+      <div className="h-48 bg-bg-card rounded-lg w-full border border-border"></div>
+      <div className="h-64 bg-bg-card rounded-lg w-full border border-border"></div>
+      <div className="h-48 bg-bg-card rounded-lg w-full border border-border"></div>
+    </div>
+  )
+}
+
 // ── Empty state ────────────────────────────────────────────────────────────
 function EmptyState() {
   return (
@@ -56,7 +68,7 @@ function EmptyState() {
 
 // ── Root ───────────────────────────────────────────────────────────────────
 export function ResultsPanel() {
-  const { results, calculationError } = useCalculationStore()
+  const { isCalculating, results, inputs, calculationError } = useCalculationStore()
 
   if (calculationError) {
     return (
@@ -70,14 +82,32 @@ export function ResultsPanel() {
     )
   }
 
+  if (isCalculating) {
+    return <LoadingSkeleton />
+  }
+
   if (!results) {
     return <EmptyState />
   }
+
+  // Edge case check: Duration override < tc
+  const stormOverride = inputs?.rainfall.stormDurationOverride;
+  const tc = results.hydrology.timeOfConcentration;
+  const showDurationWarning = stormOverride && stormOverride < tc;
 
   return (
     <div className="space-y-4">
       {/* 1 — Time banner */}
       <TimeBanner calculationTimeMs={results.calculationTimeMs} />
+
+      {/* Edge Case Warning */}
+      {showDurationWarning && (
+        <StatusBanner 
+          variant="warning" 
+          title="Storm Duration Warning" 
+          message={`The overridden storm duration (${stormOverride} min) is shorter than the time of concentration (${tc.toFixed(2)} min). This may result in an underestimation of peak discharge.`} 
+        />
+      )}
 
       {/* 2 — Hydrology: tc, XT, i, Q */}
       <HydrologyPanel hydrology={results.hydrology} />
