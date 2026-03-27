@@ -27,7 +27,10 @@ export function ManualInputForm({ onCompare, isLoading }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  } = useForm<FormValues>({ 
+    // Type assertion added to bypass Zod preprocess type mismatch
+    resolver: zodResolver(schema) as any 
+  })
 
   const onSubmit = (data: FormValues) => {
     // Strip undefined — only pass fields the user actually filled in

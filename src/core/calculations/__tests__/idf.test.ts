@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import {
   calculateHourlyReferenceIntensity,
   calculateIntensityAtDuration,
-  calculateDesignIntensity,
   generateIDFTable,
 } from '../idf'
 

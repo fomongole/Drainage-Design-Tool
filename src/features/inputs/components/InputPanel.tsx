@@ -40,8 +40,9 @@ export function InputPanel() {
   
   const prevCalculating = useRef(false)
 
-  const methods = useForm<DesignInputFormValues>({
-    resolver: zodResolver(designInputSchema),
+const methods = useForm<DesignInputFormValues>({
+    // Type assertion added to bypass Zod preprocess type mismatch
+    resolver: zodResolver(designInputSchema) as any,
     defaultValues: DEFAULT_VALUES,
   })
 
