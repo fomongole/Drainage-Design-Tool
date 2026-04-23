@@ -11,6 +11,12 @@ export interface CatchmentParams {
   runoffCoefficient: number
   /** Design return period in years (2 | 5 | 10 | 25 | 50 | 100) */
   returnPeriod: ReturnPeriod
+  /**
+   * TRRL contributing area coefficient Cₐ (dimensionless).
+   * Typical range 0.05–0.25 for East African catchments.
+   * Default: 0.13 (Namatala calibration).
+   */
+  trrlCa: number
 }
 
 export type ReturnPeriod = 2 | 5 | 10 | 25 | 50 | 100

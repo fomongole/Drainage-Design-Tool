@@ -8,6 +8,7 @@ import { runHydrologyCalculations } from '@/core/calculations/hydrology'
 import { runChannelDesign } from '@/core/calculations/channel'
 import { runValidation } from '@/core/calculations/validation'
 import { calculateTimeOfConcentration } from '@/core/calculations/hydrology'
+import { solveTRRL } from '@/core/calculations/trrl'
 
 export function useCalculation() {
   const {
@@ -55,7 +56,7 @@ export function useCalculation() {
         // Step 5: IDF table (13 durations)
         const idfTable = generateIDFTable(XT, designDuration)
 
-        // Step 6: Full hydrology results
+        // Step 6: Full hydrology results (Rational Method)
         const hydrology = runHydrologyCalculations(
           catchment,
           designIntensity,
@@ -63,8 +64,18 @@ export function useCalculation() {
           XT
         )
 
-        // Step 7: Channel design (Manning's + safety checks)
-        const channelDesign = runChannelDesign(hydrology.peakDischarge, channel)
+        // Step 7: TRRL East African Flood Model
+        // R₂₄ = XT (Gumbel T-year daily max rainfall depth in mm)
+        const trrl = solveTRRL(
+          catchment.area,           // ha — converted to km² inside solveTRRL
+          XT,                       // R₂₄ = Gumbel XT (mm)
+          catchment.trrlCa,         // Cₐ coefficient
+          hydrology.peakDischarge,  // Rational Q for % comparison
+        )
+
+        // Step 8: Channel design (Manning's + safety checks)
+        // Channel is sized for the TRRL discharge (primary method for large catchments)
+        const channelDesign = runChannelDesign(trrl.Q, channel)
 
         const calculationTimeMs = performance.now() - startTime
 
@@ -72,6 +83,7 @@ export function useCalculation() {
           hydrology,
           idfTable,
           channelDesign,
+          trrl,
           calculationTimeMs,
         })
       } catch (err) {

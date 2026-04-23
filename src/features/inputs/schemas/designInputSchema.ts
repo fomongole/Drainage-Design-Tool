@@ -19,6 +19,12 @@ export const designInputSchema = z.object({
     .refine((v) => [2, 5, 10, 25, 50, 100].includes(v), {
       message: 'Select a return period',
     }),
+  // TRRL contributing area coefficient
+  trrlCa: z.coerce
+    .number()
+    .gt(0, 'Cₐ must be > 0')
+    .max(1, 'Cₐ must be ≤ 1')
+    .default(0.13),
 
   // ── Rainfall ──────────────────────────────────────────────────────────────
   meanAnnualMaxRainfall: pos('Mean annual rainfall'),

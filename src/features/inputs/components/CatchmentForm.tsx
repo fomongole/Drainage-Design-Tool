@@ -66,6 +66,20 @@ export function CatchmentForm() {
             </option>
           ))}
         </Select>
+
+        {/* ── TRRL coefficient ──────────────────────────────────────────── */}
+        <div className="pt-1">
+          <p className="label mb-3">TRRL East African Model</p>
+          <Input
+            label="Contributing Area Coefficient (Cₐ)"
+            unit=""
+            inputMode="decimal"
+            placeholder="e.g. 0.13"
+            hint="Typical range 0.05 – 0.25 · Namatala default: 0.13"
+            error={errors.trrlCa?.message}
+            {...register('trrlCa')}
+          />
+        </div>
       </div>
     </Card>
   )

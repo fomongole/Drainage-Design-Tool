@@ -23,6 +23,7 @@ const DEFAULT_VALUES: Partial<DesignInputFormValues> = {
   slope: 0.005,
   runoffCoefficient: 0.7,
   returnPeriod: 10,
+  trrlCa: 0.13,                  // TRRL contributing area coefficient
   meanAnnualMaxRainfall: 80,
   stdDeviation: 15,
   stormDurationOverride: undefined,
@@ -40,7 +41,7 @@ export function InputPanel() {
   
   const prevCalculating = useRef(false)
 
-const methods = useForm<DesignInputFormValues>({
+  const methods = useForm<DesignInputFormValues>({
     // Type assertion added to bypass Zod preprocess type mismatch
     resolver: zodResolver(designInputSchema) as any,
     defaultValues: DEFAULT_VALUES,
@@ -64,6 +65,7 @@ const methods = useForm<DesignInputFormValues>({
         slope: data.slope,
         runoffCoefficient: data.runoffCoefficient,
         returnPeriod: data.returnPeriod as ReturnPeriod,
+        trrlCa: data.trrlCa,           // ← TRRL coefficient
       },
       rainfall: {
         meanAnnualMaxRainfall: data.meanAnnualMaxRainfall,
@@ -88,7 +90,7 @@ const methods = useForm<DesignInputFormValues>({
     } catch (err) {
       console.error('PDF export failed:', err)
       setPdfError('Failed to generate PDF. Please try again.')
-      setTimeout(() => setPdfError(null), 4000) // Auto-dismiss after 4s
+      setTimeout(() => setPdfError(null), 4000)
     } finally {
       setIsExporting(false)
     }

@@ -3,6 +3,8 @@ import { StatusBanner } from '@/components/ui/StatusBanner'
 import { TimeBanner } from './TimeBanner'
 import { HydrologyPanel } from './HydrologyPanel'
 import { ChannelDesignPanel } from './ChannelDesignPanel'
+import { TRRLPanel } from './TRRLPanel'
+import { EfficiencyPanel } from './EfficiencyPanel'
 import { IDFChart } from '@/features/idf-table/components/IDFChart'
 import { IDFTable } from '@/features/idf-table/components/IDFTable'
 import { TrapezoidalSection } from '@/features/channel-diagram/components/TrapezoidalSection'
@@ -54,8 +56,9 @@ function EmptyState() {
           '② Gumbel frequency analysis',
           '③ IDF curve generation',
           '④ Rational Method discharge',
-          "⑤ Manning's iterative solver",
-          '⑥ Safety checks & freeboard',
+          '⑤ TRRL East African Model (iterative)',
+          "⑥ Manning's iterative solver",
+          '⑦ Safety checks & freeboard',
         ].map((step) => (
           <span key={step} className="font-mono">
             {step}
@@ -91,9 +94,9 @@ export function ResultsPanel() {
   }
 
   // Edge case check: Duration override < tc
-  const stormOverride = inputs?.rainfall.stormDurationOverride;
-  const tc = results.hydrology.timeOfConcentration;
-  const showDurationWarning = stormOverride && stormOverride < tc;
+  const stormOverride = inputs?.rainfall.stormDurationOverride
+  const tc = results.hydrology.timeOfConcentration
+  const showDurationWarning = stormOverride && stormOverride < tc
 
   return (
     <div className="space-y-4">
@@ -102,29 +105,42 @@ export function ResultsPanel() {
 
       {/* Edge Case Warning */}
       {showDurationWarning && (
-        <StatusBanner 
-          variant="warning" 
-          title="Storm Duration Warning" 
-          message={`The overridden storm duration (${stormOverride} min) is shorter than the time of concentration (${tc.toFixed(2)} min). This may result in an underestimation of peak discharge.`} 
+        <StatusBanner
+          variant="warning"
+          title="Storm Duration Warning"
+          message={`The overridden storm duration (${stormOverride} min) is shorter than the time of concentration (${tc.toFixed(2)} min). This may result in an underestimation of peak discharge.`}
         />
       )}
 
-      {/* 2 — Hydrology: tc, XT, i, Q */}
+      {/* 2 — Efficiency & Cross-Validation Summary (prominent, near top) */}
+      <EfficiencyPanel
+        trrl={results.trrl}
+        hydrology={results.hydrology}
+        calculationTimeMs={results.calculationTimeMs}
+      />
+
+      {/* 3 — TRRL East African Model detail */}
+      <TRRLPanel
+        trrl={results.trrl}
+        hydrology={results.hydrology}
+      />
+
+      {/* 4 — Hydrology: tc, XT, i, Q (Rational) */}
       <HydrologyPanel hydrology={results.hydrology} />
 
-      {/* 3 — IDF Chart (log-scale visual) */}
+      {/* 5 — IDF Chart (log-scale visual) */}
       <IDFChart idfTable={results.idfTable} />
 
-      {/* 4 — IDF Table (13-row detail) */}
+      {/* 6 — IDF Table (13-row detail) */}
       <IDFTable idfTable={results.idfTable} />
 
-      {/* 5 — Trapezoidal cross-section SVG */}
+      {/* 7 — Trapezoidal cross-section SVG */}
       <TrapezoidalSection crossSection={results.channelDesign.crossSection} />
 
-      {/* 6 — Channel design metrics */}
+      {/* 8 — Channel design metrics */}
       <ChannelDesignPanel channelDesign={results.channelDesign} />
 
-      {/* 7 — Validation: manual vs automated */}
+      {/* 9 — Validation: manual vs automated */}
       <ValidationPanel />
     </div>
   )

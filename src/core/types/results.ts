@@ -66,11 +66,45 @@ export interface CrossSectionGeometry {
   topWidth: number
 }
 
+// ─── TRRL Results ──────────────────────────────────────────────────────────
+
+export interface TRRLIterationResult {
+  iteration: number
+  tcIn: number
+  Q: number
+  tcOut: number
+  delta: number
+  converged: boolean
+}
+
+export interface TRRLResults {
+  /** Converged peak discharge (m³/s) */
+  Q: number
+  /** Converged time of concentration (hours) */
+  tc: number
+  /** Full iteration log */
+  iterations: TRRLIterationResult[]
+  /** Whether convergence was achieved */
+  converged: boolean
+  /** Number of iterations taken */
+  iterationsToConverge: number
+  /** Catchment area in km² */
+  areaKm2: number
+  /** 24-hour design rainfall used (mm) */
+  r24Mm: number
+  /** Contributing area coefficient Cₐ used */
+  ca: number
+  /** % difference: Rational Method vs TRRL (positive = Rational overestimates) */
+  vsRationalPercent: number
+}
+
 /** Full results from a single calculation run */
 export interface CalculationResults {
   hydrology: HydrologyResults
   idfTable: IDFRow[]
   channelDesign: ChannelDesignResults
+  /** TRRL East African Flood Model results */
+  trrl: TRRLResults
   /** Time taken for automated calculation in milliseconds */
   calculationTimeMs: number
 }
