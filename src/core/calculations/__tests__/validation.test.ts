@@ -64,6 +64,18 @@ const mockResults: CalculationResults = {
       topWidth: 3.2,
     },
   },
+  // ── Added to satisfy updated CalculationResults type ──────────────────
+  trrl: {
+    Q: 1.5,
+    tc: 0.33,
+    iterations: [],
+    converged: true,
+    iterationsToConverge: 3,
+    areaKm2: 0.1,
+    r24Mm: 100,
+    ca: 0.13,
+    vsRationalPercent: 0,
+  },
   calculationTimeMs: 1.2,
 }
 
